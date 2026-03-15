@@ -4,7 +4,6 @@ import axios from "axios";
 function App() {
   const [meetings, setMeetings] = useState([]);
   const [file, setFile] = useState(null);
-  const [summary, setSummary] = useState("");
 
   useEffect(() => {
     loadMeetings();
@@ -13,7 +12,6 @@ function App() {
   const loadMeetings = async () => {
     console.log("loadMeetings");
     const res = await axios.get("http://localhost:8000/loadMeeting");
-
     setMeetings(res.data);
   };
 
@@ -21,17 +19,12 @@ function App() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await axios.post(
-      "http://localhost:8000/uploadMeeting",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    await axios.post("http://localhost:8000/uploadMeeting", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-    );
-
-    setSummary(res.data.summary);
+    });
+    loadMeetings();
   };
 
   return (
@@ -41,8 +34,6 @@ function App() {
       <input type="file" onChange={(e) => setFile(e.target.files[0])} />
 
       <button onClick={upload}>회의 요약</button>
-
-      <pre>{summary}</pre>
 
       <h1>Meeting History</h1>
 
